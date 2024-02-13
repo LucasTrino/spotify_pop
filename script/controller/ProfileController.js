@@ -13,9 +13,20 @@ export default class ProfileController {
     this.data = storedUserData ? JSON.parse(storedUserData) : {};
   }
 
-  saveTokensToLocalStorage(data) {
-    localStorage.setItem("sessionTokens", JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, token_type: data.token_type, expires_in: data.expires_in })); // Não deixar o secret visível em uma aplicação real
+  storeTokensWithExpiration(data) {
+    const currentTime = new Date().getTime();
+    const expirationTime = currentTime + (data.expires_in * 1000);
+    const expirationDate = new Date(expirationTime);
+    const tokens = JSON.stringify({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      token_type: data.token_type,
+      expires_in: data.expires_in,
+      expiration_date: expirationDate
+    });
+    localStorage.setItem("sessionTokens", tokens);
   }
+
 
   saveProfileToLocalStorage(data) {
     const profileData = JSON.stringify(data);
@@ -23,7 +34,8 @@ export default class ProfileController {
   }
 
   saveCodeToLocalStorage() {
-    localStorage.setItem("code", this.extractAuthorizationCodeFromUrl());
+    const code = this.extractAuthorizationCodeFromUrl();
+    localStorage.setItem("code", code);
   }
 
   getProfileFromLocalStorage() {
@@ -31,15 +43,12 @@ export default class ProfileController {
     return storedProfileData ? JSON.parse(storedProfileData) : null;
   }
 
-  isTokenValid(token) {
-    if (!token || !token.expiration_time_token) {
-      return false;
-    }
-
-    const currentTimeToken = Math.floor(Date.now() / 1000);
-    const expirationTimeToken = token.expiration_time_token + token.expires_in;
-
-    return expirationTimeToken > currentTimeToken;
+  isTokenValid() {
+    const
+      storedTokensString = localStorage.getItem("sessionTokens"),
+      storedTokens = JSON.parse(storedTokensString), currentTime = new Date().getTime(),
+      expirationTime = new Date(storedTokens.expiration_date).getTime();
+    return currentTime < expirationTime;
   }
 
   extractAuthorizationCodeFromUrl() {
@@ -62,11 +71,16 @@ export default class ProfileController {
       try {
         if (!localStorage.getItem('sessionTokens')) {
           await this.requestAccessTokens();
+        } else {
+          const sessionTokens = JSON.parse(localStorage.getItem('sessionTokens'));
+          if (!sessionTokens.access_token || !sessionTokens.refresh_token) {
+            await this.requestAccessTokens();
+          } else {
+            if (!this.isTokenValid()) {
+              await this.requestRefreshAccessTokens();
+            }
+          }
         }
-        // else {
-        //   console.log('refresh')
-        //   await this.requestRefreshAccessTokens();
-        // }
 
         const accessToken = JSON.parse(localStorage.getItem('sessionTokens')).access_token;
 
@@ -80,11 +94,6 @@ export default class ProfileController {
         this.saveProfileToLocalStorage(this.model.profile);
       }
 
-      //  else {
-      //   const profileData = this.getProfileFromLocalStorage();
-      //   profileData ? this.view.updateUserProfileUI(profileData) : null;
-      // }
-
     } else {
       window.location.href = 'http://127.0.0.1:5500';
     }
@@ -95,56 +104,91 @@ export default class ProfileController {
 
     const storedUserData = JSON.parse(localStorage.getItem('userData'));
 
-    const accessTokensData = await this.api.fetchAccessToken(storedUserData.client_id, storedUserData.client_secret, authorizationCode);
+    const response = await this.api.fetchAccessToken(storedUserData.client_id, storedUserData.client_secret, authorizationCode);
 
-    this.saveTokensToLocalStorage(accessTokensData);
+    const data = await response.json();
+
+    this.storeTokensWithExpiration(data);
+
+    return data;
   }
 
-
-  async fetchAndUpdateUserProfile(accessToken) {
-
-    let userData;
-
+  async requestRefreshAccessTokens() {
     try {
-      this.view.addPlaceholdersToScope('profile');
-
       const refreshToken = JSON.parse(localStorage.getItem('sessionTokens')).refresh_token;
       const clientId = JSON.parse(localStorage.getItem('userData')).client_id;
       const clientSecret = JSON.parse(localStorage.getItem('userData')).client_secret;
 
-      userData = await this.api.callAccessUser(accessToken, refreshToken, clientId, clientSecret);
+      const response = await this.api.fetchRefreshAccessToken(refreshToken, clientId, clientSecret);
+
+      if (!response.ok) {
+        throw new Error('Failed to refresh access token');
+      }
+
+      const data = await response.json();
+
+      this.storeTokensWithExpiration(data);
+
+      return data;
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async fetchAndUpdateUserProfile(accessToken) {
+    try {
+      this.view.addPlaceholdersToScope('profile');
+
+      const response = await this.api.callAccessUser(accessToken);
+
+      if (response.status !== 200) {
+        if (response.status === 401) {
+          const refreshedTokens = await this.requestRefreshAccessTokens();
+          const refreshedAccessToken = refreshedTokens.access_token;
+
+          await this.fetchAndUpdateUserProfile(refreshedAccessToken);
+          return;
+        } else {
+          const profileData = this.getProfileFromLocalStorage();
+          profileData ? this.view.updateUserProfileUI(profileData) : null;
+
+          alert('Não foi possível atualizar seus dados de perfil');
+
+          return;
+        }
+      }
+
+      const data = await response.json();
 
       this.view.removePlaceholdersFromScope('profile');
 
       this.saveProfileToLocalStorage(this.model.profile);
+
+      this.model.updateUserProfileProperties(data);
+      this.view.updateUserProfileUI(this.model.profile);
     } catch (error) {
       throw error;
-    } finally {
-      this.model.updateUserProfileProperties(userData);
-      this.view.updateUserProfileUI(this.model.profile);
     }
   }
 
   async fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time) {
 
-    let topArtists;
+    let data;
 
     try {
       this.view.addPlaceholdersToScope('topArtists');
 
-      const refreshToken = JSON.parse(localStorage.getItem('sessionTokens')).refresh_token;
-      const clientId = JSON.parse(localStorage.getItem('userData')).client_id;
-      const clientSecret = JSON.parse(localStorage.getItem('userData')).client_secret;
+      const response = await this.api.callUserTopsItems(accessToken, type, limit, offset, range_time);
 
-      topArtists = await this.api.callUserTopsItems(accessToken, refreshToken, clientId, clientSecret, type, limit, offset, range_time);
+      data = await response.json();
 
       this.view.removePlaceholdersFromScope('topArtists');
 
+      this.model.updateUserTopArtists(data);
+      this.view.updateUserTopArtistsUI(this.model.topArtists);
     } catch (error) {
       throw error;
-    } finally {
-      this.model.updateUserTopArtists(topArtists);
-      this.view.updateUserTopArtistsUI(this.model.topArtists);
     }
   }
 

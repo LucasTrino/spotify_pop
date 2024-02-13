@@ -141,7 +141,6 @@ export default class ProfileView {
   }
 
   updateUserTopArtistsUI(array) {
-    console.log(array)
     array.items.forEach(item => {
       const card = this._createUserTopArtistsItems(item.images[1].url, item.name);
       this.topArtists.body.appendChild(card.cloneNode(true));
