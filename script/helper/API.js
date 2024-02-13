@@ -18,25 +18,25 @@ export default class API {
     url += '&show_dialog=true';
     url += '&scope=user-read-private user-read-email user-top-read user-library-read';
     window.location.href = url;
-
-    console.log('Authorization Request OK!')
   }
 
   async fetchAccessToken(client_id, client_secret, code) {
     const body = `grant_type=authorization_code&code=${code}&redirect_uri=${this.redirect_uri}`;
 
-    const data = await this.callAccessTokens(body, client_id, client_secret);
+    const response = await this.callAccessTokens(body, client_id, client_secret);
 
-    return data;
+    return response;
   }
 
   async fetchRefreshAccessToken(refresh_token, client_id, client_secret) {
+
     let body = "grant_type=refresh_token";
     body += "&refresh_token=" + refresh_token;
     body += "&client_id=" + client_id;
 
-    const data = await this.callAccessTokens(body, client_id, client_secret);
-    return data;
+    const response = await this.callAccessTokens(body, client_id, client_secret);
+
+    return response;
   }
 
   async callAccessTokens(body, client_id, client_secret) {
@@ -50,18 +50,14 @@ export default class API {
         body: body,
       });
 
-      const data = await response.json();
-
-      console.log("Success:", data);
-
-      return data;
+      return response;
 
     } catch (error) {
       throw new Error('Error calling API: ' + error.message);
     }
   }
 
-  async callAccessUser(token, refresh_token = null, client_id = null, client_secret = null) {
+  async callAccessUser(token) {
     try {
       const response = await fetch(this.endPoints.USER, {
         method: 'GET',
@@ -70,25 +66,14 @@ export default class API {
         },
       });
 
-      if (response.status === 401) {
-
-        const refreshedToken = await this.fetchRefreshAccessToken(refresh_token, client_id, client_secret);
-
-        return this.callAccessUser(refreshedToken.access_token);
-      }
-
-      const data = await response.json();
-
-      console.log("Success:", data);
-
-      return data;
+      return response;
 
     } catch (error) {
       throw new Error('Error calling API: ' + error.message);
     }
   }
 
-  async callApi(method, url, callback, access_token, refresh_token, client_id, client_secret, body = null) {
+  async callApi(method, url, access_token, body = null) {
     const fetchOptions = {
       method: method,
       headers: {
@@ -103,7 +88,7 @@ export default class API {
 
     try {
       const response = await fetch(url, fetchOptions);
-      return await callback(response, refresh_token, client_id, client_secret);
+      return response;
     } catch (error) {
       throw new Error('Error calling API: ' + error.message);
     }
@@ -119,26 +104,9 @@ export default class API {
     return url
   }
 
-  async handleUserTopItems(response, refresh_token, client_id, client_secret, type, limit, offset, time_range) {
-    console.log(response)
-    if (response.status === 200) {
-      const data = await response.json();
-      console.log(data);
-      return data;
-    } else if (response.status === 401) {
-      const refreshedTokens = await this.fetchRefreshAccessToken(refresh_token, client_id, client_secret);
-      const accessToken = refreshedTokens.access_token;
-      const refreshToken = refreshedTokens.access_token;
-      return await this.callUserTopsItems(accessToken, refreshToken, client_id, client_secret, type, limit, offset, time_range);
-    } else {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Unknown error occurred');
-    }
-  }
-
-  async callUserTopsItems(access_token, refresh_token, client_id, client_secret, type, limit, offset, time_range) {
+  async callUserTopsItems(access_token, type, limit, offset, time_range) {
     const url = this.buildUserTopItemsUrl(type, limit, offset, time_range);
-    return await this.callApi('GET', url, this.handleUserTopItems.bind(this), access_token, refresh_token, client_id, client_secret, null);
+    return await this.callApi('GET', url, access_token);
   }
 
 }
