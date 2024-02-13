@@ -71,15 +71,8 @@ export default class ProfileController {
       try {
         if (!localStorage.getItem('sessionTokens')) {
           await this.requestAccessTokens();
-        } else {
-          const sessionTokens = JSON.parse(localStorage.getItem('sessionTokens'));
-          if (!sessionTokens.access_token || !sessionTokens.refresh_token) {
-            await this.requestAccessTokens();
-          } else {
-            if (!this.isTokenValid()) {
-              await this.requestRefreshAccessTokens();
-            }
-          }
+        } else if (!this.isTokenValid()) {
+          await this.requestRefreshAccessTokens();
         }
 
         const accessToken = JSON.parse(localStorage.getItem('sessionTokens')).access_token;
