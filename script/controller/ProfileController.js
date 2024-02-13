@@ -72,7 +72,7 @@ export default class ProfileController {
 
         await this.fetchAndUpdateUserProfile(accessToken);
 
-        await this.fetchAndUpdateUserTops(accessToken, 'artists', 10, 0, 'medium_term');
+        // await this.fetchAndUpdateUserTops(accessToken, 'artists', 10, 0, 'medium_term');
 
       } catch (error) {
         console.error('Error during page load:', error);

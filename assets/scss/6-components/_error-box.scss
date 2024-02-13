@@ -1,0 +1,29 @@
+.error__box {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+}
+
+.error__content {
+  width: 60%;
+
+  padding: 1.5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+
+  // background-color: $ui-03;
+  border-radius: 10px;
+  // border: 1px solid $white-inverse;
+
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  > .icon {
+    font-size: 6rem;
+  }
+}

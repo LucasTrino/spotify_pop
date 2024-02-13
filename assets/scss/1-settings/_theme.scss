@@ -2,9 +2,9 @@
 $ui-black: $black !default;
 $ui-white: $white !default;
 
-$ui-01: $grey-01 !default; 
-$ui-02: $grey-02 !default; 
-$ui-03: $grey-03 !default; 
+$ui-01: $grey-01 !default;
+$ui-02: $grey-02 !default;
+$ui-03: $grey-03 !default;
 
 //ui borders colors
 $ui-border: $white !default;
@@ -18,20 +18,24 @@ $text-03: $grey-light !default;
 $primary: $green !default;
 $success: $blue !default;
 $secundary: $grey !default;
+$danger: $red !default;
 
 //support colors map
 $support-colors: (
-    "primary": $primary,
-    "secundary": $secundary,
+  "primary": $primary,
+  "secundary": $secundary,
+  "danger": $danger,
 ) !default;
 
 //icons colors
 $icon-01: $white-inverse !default;
 $icon-02: $grey-04 !default;
 $icon-03: $primary !default;
+$icon-04: $danger !default;
 
 $icon-colors: (
-    "01": $icon-01,
-    "02": $icon-02,
-    "03": $icon-03,
+  "01": $icon-01,
+  "02": $icon-02,
+  "03": $icon-03,
+  "04": $icon-04,
 ) !default;

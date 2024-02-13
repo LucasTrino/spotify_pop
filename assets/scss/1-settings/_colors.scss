@@ -14,7 +14,7 @@ $grey-dark: #2e2f33 !default;
 $grey-light: #9a9898 !default;
 
 $grey-01: #212222 !default;
-$grey-02: #2E2E2E !default;
+$grey-02: #2e2e2e !default;
 $grey-03: #303030 !default;
 $grey-04: #505257 !default;
 
@@ -29,9 +29,11 @@ $monos: (
 //colors variables
 $green: #1ed760 !default;
 $blue: #007acc !default;
+$red: #e95c4e !default;
 
 //colors maps
 $colors: (
   "primary": $green,
   "success": $blue,
+  "danger": $red,
 ) !default;
