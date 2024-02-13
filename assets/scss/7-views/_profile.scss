@@ -1,0 +1,45 @@
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  color: $text-01;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+
+  background-color: $ui-01;
+
+  overflow: hidden;
+}
+
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  background-color: $ui-01;
+}
+
+.content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  padding: 2rem;
+
+  background-color: $ui-01;
+
+  overflow-y: auto;
+}
+
+@media only screen and (max-width: 800px) {
+  .main {
+    flex-direction: column;
+  }
+}

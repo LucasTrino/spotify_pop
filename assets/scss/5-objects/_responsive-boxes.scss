@@ -1,0 +1,18 @@
+$base-size: 1rem;
+
+@for $i from 1 through 10 {
+  $size: $i * $base-size;
+
+  .box-width-#{$i} {
+    width: #{$size};
+  }
+
+  .box-height-#{$i} {
+    height: #{$size};
+  }
+
+  .box-square-#{$i} {
+    width: #{$size};
+    height: #{$size};
+  }
+}

@@ -1,0 +1,37 @@
+//===================
+//colors variables
+//===================
+
+//mono colors variables
+$black: #000000 !default;
+$black-inverse: #121212 !default;
+
+$white: #ffffff !default;
+$white-inverse: #f4f4f4 !default;
+
+$grey: #424142 !default;
+$grey-dark: #2e2f33 !default;
+$grey-light: #9a9898 !default;
+
+$grey-01: #212222 !default;
+$grey-02: #2E2E2E !default;
+$grey-03: #303030 !default;
+$grey-04: #505257 !default;
+
+//mono colors maps
+$monos: (
+  "black": $black,
+  "black-inverse": $black-inverse,
+  "white": $white,
+  "white-inverse": $white-inverse,
+) !default;
+
+//colors variables
+$green: #1ed760 !default;
+$blue: #007acc !default;
+
+//colors maps
+$colors: (
+  "primary": $green,
+  "success": $blue,
+) !default;

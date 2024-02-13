@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/scss/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <title>Spotify POP</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <img
+          src="../assets/img/Spotify_logo_with_text.svg.png"
+          alt="Spotify POP"
+          title="Spotify POP"
+          style="
+            width: 80px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -2px;
+          "
+        />
+      </header>
+      <main class="main">
+        <section class="menu">
+          <div class="profile-card" data-profile-card data-scope-user-profile>
+
+            <div
+              class="profile-card__img"
+              data-profile-image-box
+              data-scope-box
+            ></div>
+            <span
+              class="profile-card__name"
+              data-profile-name
+              data-scope-box
+            ></span>
+            <div class="profile-card__info">
+              <div class="profile-card__info__items">
+                <span class="profile-card__info__items__title">País</span>
+                <span
+                  class="profile-card__info__items__value"
+                  data-profile-country
+                  data-scope-box
+                ></span>
+              </div>
+              <div class="profile-card__info__items">
+                <span class="profile-card__info__items__title">Seguidores</span>
+                <span
+                  class="profile-card__info__items__value"
+                  data-profile-followers
+                  data-scope-box
+                ></span>
+              </div>
+              <div class="profile-card__info__items">
+                <span class="profile-card__info__items__title">Conta</span>
+                <span
+                  class="profile-card__info__items__value"
+                  data-profile-product
+                  data-scope-box
+                ></span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="content row">
+          <!-- carousel -->
+          <div class="carousel" data-carousel data-ui-user-top-artists-wrapper>
+            <div class="carousel__header">Seus artistas favoritos</div>
+            <div
+              class="carousel__body"
+              data-carousel-container
+              data-scope-user-top-artists
+              data-ui-user-top-artists-body
+            ></div>
+            <button
+              type="button"
+              class="btn-icon carousel__btn--left"
+              data-carousel-btn="prev"
+            >
+              <span class="material-symbols-outlined icon"> chevron_left </span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-icon carousel__btn--right"
+              data-carousel-btn="next"
+            >
+              <span class="material-symbols-outlined icon">
+                chevron_right
+              </span>
+            </button>
+          </div>
+
+          <div class="carousel" data-carousel data-ui-user-top-tracks-wrapper>
+            <div class="carousel__header">Suas músicas favoritas</div>
+            <div
+              class="carousel__body"
+              data-carousel-container
+              data-scope-user-top-tracks
+              data-ui-user-top-tracks-body
+            ></div>
+            <button
+              type="button"
+              class="btn-icon carousel__btn--left"
+              data-carousel-btn="prev"
+            >
+              <span class="material-symbols-outlined icon"> chevron_left </span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-icon carousel__btn--right"
+              data-carousel-btn="next"
+            >
+              <span class="material-symbols-outlined icon">
+                chevron_right
+              </span>
+            </button>
+          </div>
+          <!-- carousel -->
+        </section>
+      </main>
+    </div>
+    <script src="../script/main.js" type="module"></script>
+  </body>
+</html>

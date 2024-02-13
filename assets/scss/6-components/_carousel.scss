@@ -1,0 +1,50 @@
+.carousel {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  background-color: $ui-02;
+  border-radius: 10px;
+}
+
+.carousel__body {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+
+  padding: .5rem 1.5rem 1rem 1.5rem;
+
+  position: relative;
+
+  flex-wrap: nowrap;
+
+  overflow: hidden;
+}
+
+//btn
+.carousel__btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+}
+
+.carousel__btn--left {
+  @extend .carousel__btn;
+  left: 5px;
+}
+
+.carousel__btn--right {
+  @extend .carousel__btn;
+  right: 5px;
+}
+//btn
+
+.carousel__header,
+.carousel__footer {
+  font-size: 1.7rem;
+  padding: 1.5rem;
+}
+
+.carousel__header {
+  font-weight: 600;
+}

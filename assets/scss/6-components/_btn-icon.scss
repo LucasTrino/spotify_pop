@@ -1,0 +1,23 @@
+.btn-icon {
+  @extend %reset-button-styles;
+
+  padding: 0.5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(120, 119, 119, 0.6);
+  border-radius: 50%;
+  transition: all linear 0.3s;
+
+  > .icon {
+    color: $icon-01;
+  }
+
+  &:hover {
+    background-color: rgba(120, 119, 119, 0.8);
+  }
+
+  
+}

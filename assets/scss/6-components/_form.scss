@@ -1,0 +1,72 @@
+.form-wrapper {
+  color: $white-inverse;
+  font-size: 1.3rem;
+
+  & a {
+    text-decoration: none;
+    color: $primary;
+  }
+
+  & .text {
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 3rem;
+  }
+
+  &-login {
+    position: relative;
+  
+    margin: 2rem 0 4rem;
+    padding: 1rem 0;
+    
+    width: 100%;
+
+    font-size: 1.8rem;
+
+    & label {
+      position: absolute;
+
+      top: -.5rem;
+      left: 0;
+
+      color: $white-inverse;
+    }
+
+    & label span {
+      display: inline-block;
+
+      font-size: 1.8rem;
+
+    //   min-width: 5rem;
+
+      transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+  }
+}
+
+.form-control-login {
+  background-color: transparent;
+
+  border: 0;
+  padding: 0 0 .8rem 0;
+  border-bottom: 0.2rem $white-inverse solid;
+  display: block;
+
+  width: 100%;
+
+  color: $white-inverse;
+
+  &:focus,
+  &:valid {
+    outline: 0;
+    border-bottom-color: $primary;
+  }
+
+  &:focus + label span,
+  &:valid + label span {
+    color: $primary;
+    transform: translateY(-3rem);
+  }
+}

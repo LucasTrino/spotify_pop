@@ -1,0 +1,6 @@
+@each $color, $value in $icon-colors {
+    .icon-#{$color} {
+        color: $value;
+        transition: color ease-in-out .25s;
+    }
+}

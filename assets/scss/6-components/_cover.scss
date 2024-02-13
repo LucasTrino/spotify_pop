@@ -1,0 +1,16 @@
+.cover {
+  height: 16vw;
+  min-height: 200px;
+
+  padding: 15px 25px;
+
+  position: relative;
+
+  border-radius: 15px;
+
+  // background-image: url("https://spider145hqs.files.wordpress.com/2021/10/destaque_batmanportomking_vol03_eusousuicida_panini_02102021.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: $ui-02;
+}

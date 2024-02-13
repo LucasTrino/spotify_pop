@@ -1,0 +1,25 @@
+.placeholder {
+  display: inline-block;
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait;
+  background-color: currentcolor;
+  opacity:  .5;
+
+  &.btn::before {
+    display: inline-block;
+    content: "";
+  }
+}
+
+.placeholder-glow {
+  .placeholder {
+    animation: placeholder-glow 2s ease-in-out infinite;
+  }
+}
+
+@keyframes placeholder-glow {
+  50% {
+    opacity: .2;
+  }
+}

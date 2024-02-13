@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="../assets/scss/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <body>
+    <main class="login">
+      <div class="login__filter">
+        <section class="login__card">
+          <div class="login__card__logo">
+            <figure class="login__card__img">
+              <img
+                src="../assets/img/Spotify_logo_with_text.svg.png"
+                alt="Spotify logo"
+              />
+            </figure>
+          </div>
+          <form class="form-wrapper">
+            <div class="form-wrapper-login">
+              <input
+                class="form-control-login"
+                type="text"
+                name="client_id"
+                data-clientId
+                required
+              />
+              <label data-labelInput>Client Id</label>
+            </div>
+
+            <div class="form-wrapper-login">
+              <input
+                class="form-control-login"
+                type="text"
+                name="client_secret"
+                data-clientSecret
+                required
+              />
+              <label data-labelInput>Client Secret</label>
+            </div>
+
+            <button class="btn-primary login__card__btn" data-submitButton>
+              Logar
+            </button>
+            <p class="text">
+              Ainda não tem um token? <a href="">Crie Aqui!</a>
+            </p>
+          </form>
+        </section>
+      </div>
+
+    </main>
+    <script src="./script/main.js" type="module"></script>
+  </body>
+</html>
