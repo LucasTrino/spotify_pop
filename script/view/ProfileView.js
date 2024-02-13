@@ -209,4 +209,25 @@ export default class ProfileView {
 
   }
 
+  addErrorToScope(message, scope) {
+    const errorBox = document.createElement('div');
+    errorBox.classList.add('error__box');
+
+    const errorContent = document.createElement('div');
+    errorContent.classList.add('error__content');
+
+    const errorIcon = document.createElement('span');
+    errorIcon.classList.add('material-symbols-outlined', 'icon-04', 'icon');
+    errorIcon.textContent = 'error';
+
+    const errorMessage = document.createElement('span');
+    errorMessage.textContent = message;
+
+    errorContent.appendChild(errorIcon);
+    errorContent.appendChild(errorMessage);
+    errorBox.appendChild(errorContent);
+
+    this.contentScopes[scope].appendChild(errorBox)
+  }
+
 }
