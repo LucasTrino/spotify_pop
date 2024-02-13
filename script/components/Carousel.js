@@ -13,11 +13,23 @@ export default class Carousel {
 
     this.currentPosition = 0;
 
-    this.togglePrevButton();
+    this.toggleButtons();
     this.container.addEventListener('scroll', () => {
+      this.toggleButtons();
+    });
+
+    this._observeCarouselChanges();
+  }
+
+  toggleButtons() {
+    const carouselItems = this.container.querySelectorAll('[data-carousel-item]');
+    if (carouselItems.length === 0) {
+      this.prevButton.style.display = 'none';
+      this.nextButton.style.display = 'none';
+    } else {
       this.togglePrevButton();
       this.toggleNextButton();
-    });
+    }
   }
 
   togglePrevButton() {
@@ -44,25 +56,31 @@ export default class Carousel {
     const isPrevious = direction === -1;
     const isNext = direction === 1;
 
+    this.prevButton.disabled = true;
+    this.nextButton.disabled = true;
+
     const carouselItems = Array.from(this.container.querySelectorAll('[data-carousel-item]'));
 
-    if(carouselItems) {
+    if (carouselItems.length > 0) {
       const isAtStart = this.container.scrollLeft === 0;
       const isAtEnd = this.container.scrollLeft === (this.container.scrollWidth - this.container.clientWidth);
-  
+
       if ((isPrevious && !isAtStart) || (isNext && !isAtEnd)) {
         const itemRect = carouselItems[0].getBoundingClientRect();
         const itemWidth = itemRect.width;
         const dif = this._getDistanceBetweenElements(carouselItems[0], carouselItems[1]);
-  
+
         this.currentPosition += direction * (itemWidth + dif);
-        this._smoothScrollTo(this.currentPosition, 300);
+        this._smoothScrollTo(this.currentPosition, 300, () => {
+          this.prevButton.disabled = false;
+          this.nextButton.disabled = false;
+        });
       }
     }
 
   }
 
-  _smoothScrollTo(to, duration) {
+  _smoothScrollTo(to, duration, callback) {
     let element = this.container;
     let start = this.container.scrollLeft,
       change = to - start,
@@ -83,10 +101,7 @@ export default class Carousel {
       if (currentTime <= duration) {
         setTimeout(animateScroll, increment);
       } else {
-        setTimeout(() => {
-          this.togglePrevButton();
-          this.toggleNextButton();
-        }, 300);
+        callback();
       }
     };
 
@@ -104,5 +119,13 @@ export default class Carousel {
 
     const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     return distance;
+  }
+
+  _observeCarouselChanges() {
+    const observer = new MutationObserver(() => {
+      this.toggleButtons();
+    });
+
+    observer.observe(this.container, { childList: true, subtree: true });
   }
 }
