@@ -181,6 +181,20 @@ export default class ProfileController {
 
       const response = await this.api.callUserTopsItems(accessToken, type, limit, offset, range_time);
 
+      if (response.status !== 200) {
+        if (response.status === 401) {
+          const refreshedTokens = await this.requestRefreshAccessTokens();
+          const refreshedAccessToken = refreshedTokens.access_token;
+
+          await this.fetchAndUpdateUserTops(refreshedAccessToken, type, limit, offset, range_time);
+          return;
+        } else {
+          alert('Não foi possível atualizar seus de top artistas');
+
+          return;
+        }
+      }
+
       data = await response.json();
 
       this.view.removePlaceholdersFromScope('topArtists');
