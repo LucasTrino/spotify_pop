@@ -79,12 +79,10 @@ export default class ProfileController {
 
         await this.fetchAndUpdateUserProfile(accessToken);
 
-        // await this.fetchAndUpdateUserTops(accessToken, 'artists', 10, 0, 'medium_term');
+        await this.fetchAndUpdateUserTops(accessToken, 'artists', 10, 0, 'medium_term');
 
       } catch (error) {
         console.error('Error during page load:', error);
-      } finally {
-        this.saveProfileToLocalStorage(this.model.profile);
       }
 
     } else {
@@ -92,21 +90,47 @@ export default class ProfileController {
     }
   }
 
-  async requestAccessTokens() {
-    const authorizationCode = this.extractAuthorizationCodeFromUrl();
+  //Retry Pattern
+  async requestAccessTokens(retryCount = 0) {
+    const MAX_RETRIES = 3;
+    try {
+      const authorizationCode = this.extractAuthorizationCodeFromUrl();
 
-    const storedUserData = JSON.parse(localStorage.getItem('userData'));
+      const storedUserData = JSON.parse(localStorage.getItem('userData'));
+      if (!storedUserData || !storedUserData.client_id || !storedUserData.client_secret) {
+        throw new Error('Missing or invalid stored user data.');
+      }
 
-    const response = await this.api.fetchAccessToken(storedUserData.client_id, storedUserData.client_secret, authorizationCode);
+      const response = await this.api.fetchAccessToken(storedUserData.client_id, storedUserData.client_secret, authorizationCode);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch access token. Server responded with status ${response.status}`);
+      }
 
-    const data = await response.json();
+      const data = await response.json();
+      if (!data.access_token || !data.refresh_token || !data.expires_in) {
+        throw new Error('Invalid access token data received.');
+      }
 
-    this.storeTokensWithExpiration(data);
+      this.storeTokensWithExpiration(data);
 
-    return data;
+      return data;
+    } catch (error) {
+      console.error('Error fetching access tokens:', error);
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+        return this.requestAccessTokens(retryCount + 1);
+      } else {
+        window.location.href = 'http://127.0.0.1:5500';
+      }
+    }
   }
 
-  async requestRefreshAccessTokens() {
+  //todo: ancapsular lógica retry em um método independente
+
+  //Retry Pattern
+  async requestRefreshAccessTokens(retryCount = 0) {
+    const MAX_RETRIES = 3;
     try {
       const refreshToken = JSON.parse(localStorage.getItem('sessionTokens')).refresh_token;
       const clientId = JSON.parse(localStorage.getItem('userData')).client_id;
@@ -125,14 +149,27 @@ export default class ProfileController {
       return data;
 
     } catch (error) {
-      throw error;
+      console.error('Error refreshing access tokens:', error);
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+        return this.requestRefreshAccessTokens(retryCount + 1);
+      } else {
+        throw new Error('Maximum retry limit reached');
+      }
     }
   }
 
-  async fetchAndUpdateUserProfile(accessToken) {
-    try {
-      this.view.addPlaceholdersToScope('profile');
+  //Retry Pattern
+  async fetchAndUpdateUserProfile(accessToken, retryCount = 0) {
+    const MAX_RETRIES = 3;
 
+    if (retryCount === 0) {
+      this.view.addPlaceholdersToScope('profile');
+    }
+
+    try {
       const response = await this.api.callAccessUser(accessToken);
 
       if (response.status !== 200) {
@@ -142,13 +179,15 @@ export default class ProfileController {
 
           await this.fetchAndUpdateUserProfile(refreshedAccessToken);
           return;
+
         } else {
           const profileData = this.getProfileFromLocalStorage();
-          profileData ? this.view.updateUserProfileUI(profileData) : null;
-
-          alert('Não foi possível atualizar seus dados de perfil');
-
-          return;
+          
+          if (profileData) {
+            this.view.updateUserProfileUI(profileData);
+          } else {
+            throw new Error(`Failed to fetch user profile data. Server responded with status ${response.status}`);
+          }
         }
       }
 
@@ -156,22 +195,37 @@ export default class ProfileController {
 
       this.view.removePlaceholdersFromScope('profile');
 
-      this.saveProfileToLocalStorage(this.model.profile);
+      this.saveProfileToLocalStorage(data);
 
       this.model.updateUserProfileProperties(data);
       this.view.updateUserProfileUI(this.model.profile);
+
     } catch (error) {
-      throw error;
+
+      console.error('Error fetching and updating user profile:', error);
+
+      if (retryCount < MAX_RETRIES) {
+
+        console.log(`Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+        return this.fetchAndUpdateUserProfile(accessToken, retryCount + 1);
+
+      } else {
+        alert('Não foi possível atualizar seus dados de perfil');
+      }
+
     }
   }
 
-  async fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time) {
+  //Retry Pattern
+  async fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time, retryCount = 0) {
+    const MAX_RETRIES = 3;
 
-    let data;
+    if (retryCount === 0) {
+      this.view.addPlaceholdersToScope('topArtists');
+    }
 
     try {
-      this.view.addPlaceholdersToScope('topArtists');
-
       const response = await this.api.callUserTopsItems(accessToken, type, limit, offset, range_time);
 
       if (response.status !== 200) {
@@ -182,21 +236,37 @@ export default class ProfileController {
           await this.fetchAndUpdateUserTops(refreshedAccessToken, type, limit, offset, range_time);
           return;
         } else {
-          alert('Não foi possível atualizar seus de top artistas');
-
-          return;
+          throw new Error(`Failed to fetch data. Server responded with status ${response.status}`);
         }
       }
 
-      data = await response.json();
+      const data = await response.json();
 
       this.view.removePlaceholdersFromScope('topArtists');
 
       this.model.updateUserTopArtists(data);
       this.view.updateUserTopArtistsUI(this.model.topArtists);
     } catch (error) {
-      throw error;
+      console.error('Error fetching and updating user tops:', error);
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+        return this.fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time, retryCount + 1);
+      } else {
+        this.view.removePlaceholdersFromScope('topArtists');
+        if (error instanceof RequestFailedError) {
+          console.error('Request failed:', error);
+          this.view.addErrorToScope('Não foi possível retornar os dados.', 'topArtists');
+        } else if (error instanceof MissingDataError) {
+          console.error('Missing data error:', error);
+          this.view.addErrorToScope('Parece que você não tem artistas favoritos.', 'topArtists');
+        } else {
+          console.error('Unknown error:', error);
+          this.view.addErrorToScope('Não foi possível retornar os dados.', 'topArtists');
+        }
+      }
     }
   }
+
 
 }

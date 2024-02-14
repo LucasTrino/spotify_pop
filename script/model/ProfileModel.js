@@ -1,3 +1,5 @@
+import { MissingDataError } from "../entities/Errors.js";
+
 export default class ProfileModel {
   constructor() {
     this.profile = {
@@ -18,17 +20,24 @@ export default class ProfileModel {
   updateUserProfileProperties(data) {
     const { images, display_name, id, email, country, followers, product } = data;
 
+    if (!display_name || !id || !email || !country || followers === undefined || !product) {
+      throw new MissingDataError('User profile data is missing or invalid.');
+    }
+
     this.profile.imgUrl = images && images.length > 1 ? images[1].url : null;
     this.profile.name = display_name;
     this.profile.id = id;
     this.profile.email = email;
     this.profile.country = country;
-    this.profile.followers = followers.total;
+    this.profile.followers = followers.total !== undefined ? followers.total : 0;
     this.profile.product = product;
   }
 
   updateUserTopArtists(data) {
-    this.topArtists.items = data.items ? data.items : null;
+    if (Array.isArray(data.items) && data.items.length > 0) {
+      this.topArtists.items = data.items;
+    } else {
+      throw new MissingDataError('Items data is missing or invalid.');
+    }
   }
-
 }

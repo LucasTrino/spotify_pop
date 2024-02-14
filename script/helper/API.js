@@ -1,3 +1,5 @@
+import { RequestFailedError } from "../entities/Errors.js";
+
 export default class API {
   constructor() {
     this.redirect_uri = "http://127.0.0.1:5500/views/profile.html";
@@ -53,7 +55,7 @@ export default class API {
       return response;
 
     } catch (error) {
-      throw new Error('Error calling API: ' + error.message);
+      throw new RequestFailedError(`Token Request failed: ${error.message}`);
     }
   }
 
@@ -69,7 +71,7 @@ export default class API {
       return response;
 
     } catch (error) {
-      throw new Error('Error calling API: ' + error.message);
+      throw new RequestFailedError(`Access User Request failed: ${error.message}`);
     }
   }
 
@@ -90,7 +92,7 @@ export default class API {
       const response = await fetch(url, fetchOptions);
       return response;
     } catch (error) {
-      throw new Error('Error calling API: ' + error.message);
+      throw new RequestFailedError(`API Request failed: ${error.message}`);
     }
   }
 

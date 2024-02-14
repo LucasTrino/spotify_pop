@@ -1,4 +1,5 @@
 import Carousel from "../components/Carousel.js";
+import { InvalidInputError } from "../entities/Errors.js";
 
 export default class ProfileView {
   constructor() {
@@ -141,14 +142,30 @@ export default class ProfileView {
   }
 
   updateUserTopArtistsUI(array) {
+    if (!array || !Array.isArray(array.items)) {
+      throw new InvalidInputError('Invalid input array for updateUserTopArtistsUI');
+    }
+
+    const { body } = this.topArtists;
     array.items.forEach(item => {
-      const card = this._createUserTopArtistsItems(item.images[1].url, item.name);
-      this.topArtists.body.appendChild(card.cloneNode(true));
-    })
+      const { url: imageUrl, name } = item.images[1];
+      const card = this._createUserTopArtistsItems(imageUrl, name);
+      body.appendChild(card);
+    });
   }
 
   updateUserProfileUI(userData) {
+    if (!userData || typeof userData !== 'object' || Object.keys(userData).length === 0) {
+      throw new InvalidInputError('Invalid user profile data for updateUserProfileUI');
+    }
+
     const { imgUrl, name, country, followers, product } = userData;
+
+    if (!imgUrl || typeof imgUrl !== 'string' || !name || typeof name !== 'string' ||
+      !country || typeof country !== 'string' || followers === undefined || typeof followers !== 'number' ||
+      !product || typeof product !== 'string') {
+      throw new InvalidInputError('Invalid user profile data for updateUserProfileUI');
+    }
 
     this._createProfileImageFigure(imgUrl, name);
 
@@ -156,8 +173,7 @@ export default class ProfileView {
     this.profile.country.innerHTML = country;
     this.profile.followers.innerHTML = followers;
     this.profile.product.innerHTML = product;
-  };
-
+  }
 
   addPlaceholdersToScope(scope) {
     const scopeElement = document.querySelector(this.contentScopes[scope]);
@@ -226,7 +242,7 @@ export default class ProfileView {
     errorContent.appendChild(errorMessage);
     errorBox.appendChild(errorContent);
 
-    this.contentScopes[scope].appendChild(errorBox)
+    document.querySelector(this.contentScopes[scope]).appendChild(errorBox)
   }
 
 }
