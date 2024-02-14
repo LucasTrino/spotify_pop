@@ -148,18 +148,19 @@ export default class ProfileView {
 
     const { body } = this.topArtists;
     array.items.forEach(item => {
-      const { url: imageUrl, name } = item.images[1];
+      const { url: imageUrl } = item.images[1];
+      const name = item.name;
       const card = this._createUserTopArtistsItems(imageUrl, name);
       body.appendChild(card);
     });
   }
 
-  updateUserProfileUI(userData) {
-    if (!userData || typeof userData !== 'object' || Object.keys(userData).length === 0) {
+  updateUserProfileUI(data) {
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
       throw new InvalidInputError('Invalid user profile data for updateUserProfileUI');
     }
 
-    const { imgUrl, name, country, followers, product } = userData;
+    const { imgUrl, name, country, followers, product } = data;
 
     if (!imgUrl || typeof imgUrl !== 'string' || !name || typeof name !== 'string' ||
       !country || typeof country !== 'string' || followers === undefined || typeof followers !== 'number' ||
