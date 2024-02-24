@@ -1,4 +1,5 @@
 import API from "../helper/API.js";
+import URL from "../entities/URL.js";
 
 export default class ProfileController {
   constructor(view, model) {
@@ -6,6 +7,8 @@ export default class ProfileController {
     this.model = model;
 
     this.api = new API();
+
+    this.URL = new URL();
 
     this.pageLoad();
 
@@ -70,7 +73,7 @@ export default class ProfileController {
 
       try {
         if (!JSON.parse(localStorage.getItem('userData')).client_id) {
-          window.location.href = 'http://127.0.0.1:5500';
+          window.location.href = this.URL.default;
         } else if (!localStorage.getItem('sessionTokens')) {
           await this.requestAccessTokens();
         }
@@ -87,7 +90,7 @@ export default class ProfileController {
       }
 
     } else {
-      window.location.href = 'http://127.0.0.1:5500';
+      window.location.href = this.URL.default;
     }
   }
 
@@ -124,7 +127,7 @@ export default class ProfileController {
         return this.requestAccessTokens(retryCount + 1);
       }
       // else {
-      //   window.location.href = 'http://127.0.0.1:5500';
+      //   window.location.href = this.URL.default;
       // }
     }
   }
