@@ -69,17 +69,18 @@ export default class ProfileController {
       this.saveCodeToLocalStorage();
 
       try {
-        if (!localStorage.getItem('sessionTokens')) {
+        if (!JSON.parse(localStorage.getItem('userData')).client_id) {
+          window.location.href = 'http://127.0.0.1:5500';
+        } else if (!localStorage.getItem('sessionTokens')) {
           await this.requestAccessTokens();
-        } else if (!this.isTokenValid()) {
-          await this.requestRefreshAccessTokens();
         }
 
         const accessToken = JSON.parse(localStorage.getItem('sessionTokens')).access_token;
 
         await this.fetchAndUpdateUserProfile(accessToken);
 
-        await this.fetchAndUpdateUserTops(accessToken, 'artists', 10, 0, 'medium_term');
+        await this.fetchAndUpdateUserTops(accessToken, 'topArtists', 'artists', 10, 0, 'medium_term');
+        await this.fetchAndUpdateUserTops(accessToken, 'topTracks', 'tracks', 10, 0, 'medium_term');
 
       } catch (error) {
         console.error('Error during page load:', error);
@@ -95,13 +96,14 @@ export default class ProfileController {
     const MAX_RETRIES = 3;
     try {
       const authorizationCode = this.extractAuthorizationCodeFromUrl();
+      let codeVerifier = localStorage.getItem('codeVerifier')
 
       const storedUserData = JSON.parse(localStorage.getItem('userData'));
-      if (!storedUserData || !storedUserData.client_id || !storedUserData.client_secret) {
+      if (!storedUserData || !storedUserData.client_id) {
         throw new Error('Missing or invalid stored user data.');
       }
 
-      const response = await this.api.fetchAccessToken(storedUserData.client_id, storedUserData.client_secret, authorizationCode);
+      const response = await this.api.fetchAccessToken(authorizationCode, storedUserData.client_id, codeVerifier);
       if (!response.ok) {
         throw new Error(`Failed to fetch access token. Server responded with status ${response.status}`);
       }
@@ -120,9 +122,10 @@ export default class ProfileController {
         console.log(`Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
         await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
         return this.requestAccessTokens(retryCount + 1);
-      } else {
-        window.location.href = 'http://127.0.0.1:5500';
       }
+      // else {
+      //   window.location.href = 'http://127.0.0.1:5500';
+      // }
     }
   }
 
@@ -134,9 +137,8 @@ export default class ProfileController {
     try {
       const refreshToken = JSON.parse(localStorage.getItem('sessionTokens')).refresh_token;
       const clientId = JSON.parse(localStorage.getItem('userData')).client_id;
-      const clientSecret = JSON.parse(localStorage.getItem('userData')).client_secret;
 
-      const response = await this.api.fetchRefreshAccessToken(refreshToken, clientId, clientSecret);
+      const response = await this.api.fetchRefreshAccessToken(refreshToken, clientId);
 
       if (!response.ok) {
         throw new Error('Failed to refresh access token');
@@ -182,7 +184,7 @@ export default class ProfileController {
 
         } else {
           const profileData = this.getProfileFromLocalStorage();
-          
+
           if (profileData) {
             this.view.updateUserProfileUI(profileData);
           } else {
@@ -218,11 +220,11 @@ export default class ProfileController {
   }
 
   //Retry Pattern
-  async fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time, retryCount = 0) {
+  async fetchAndUpdateUserTops(accessToken, scope, type, limit, offset, range_time, retryCount = 0) {
     const MAX_RETRIES = 3;
 
     if (retryCount === 0) {
-      this.view.addPlaceholdersToScope('topArtists');
+      this.view.addPlaceholdersToScope(scope);
     }
 
     try {
@@ -242,10 +244,10 @@ export default class ProfileController {
 
       const data = await response.json();
 
-      this.view.removePlaceholdersFromScope('topArtists');
+      this.view.removePlaceholdersFromScope(scope);
 
-      this.model.updateUserTopArtists(data);
-      this.view.updateUserTopArtistsUI(this.model.topArtists);
+      this.model.updateUserTops(data, scope);
+      this.view.updateUserTopsUI(this.model[scope], scope);
     } catch (error) {
       console.error('Error fetching and updating user tops:', error);
       if (retryCount < MAX_RETRIES) {
@@ -253,16 +255,16 @@ export default class ProfileController {
         await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
         return this.fetchAndUpdateUserTops(accessToken, type, limit, offset, range_time, retryCount + 1);
       } else {
-        this.view.removePlaceholdersFromScope('topArtists');
+        this.view.removePlaceholdersFromScope(scope);
         if (error instanceof RequestFailedError) {
           console.error('Request failed:', error);
-          this.view.addErrorToScope('Não foi possível retornar os dados.', 'topArtists');
+          this.view.addErrorToScope('Não foi possível retornar os dados.', scope);
         } else if (error instanceof MissingDataError) {
           console.error('Missing data error:', error);
-          this.view.addErrorToScope('Parece que você não tem artistas favoritos.', 'topArtists');
+          this.view.addErrorToScope('Parece que você não tem artistas favoritos.', scope);
         } else {
           console.error('Unknown error:', error);
-          this.view.addErrorToScope('Não foi possível retornar os dados.', 'topArtists');
+          this.view.addErrorToScope('Não foi possível retornar os dados.', scope);
         }
       }
     }

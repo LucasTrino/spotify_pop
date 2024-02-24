@@ -6,25 +6,26 @@ export default class LoginController {
 
     this.api = new API();
 
-    this.view.submit(this.handleUserSecretId.bind(this), this.handlerRequestAuthorization.bind(this), this.handlerIsLoginValuesValid);
+    this.view.submit(this.handleUserId.bind(this), this.handlerRequestAuthorization.bind(this), this.handlerIsLoginValuesValid);
   }
 
-  handleUserSecretId(id, secret) {
-    this.setStoredUserData(id, secret);
+  handleUserId(id) {
+    this.setStoredUserData(id);
   }
 
-  handlerRequestAuthorization(id, secret) {
+  handlerRequestAuthorization(id) {
     this.api.requestAuthorization(id);
-    this.setStoredUserData(id, secret);
+    console.log(id);
+    this.setStoredUserData(id);
   }
 
 
-  handlerIsLoginValuesValid(id, secret) {
-    return secret !== '' && id !== '';
+  handlerIsLoginValuesValid(id) {
+    return id !== '';
   };
 
-  setStoredUserData(id, secret) {
-    localStorage.setItem("userData", JSON.stringify({ client_id: id, client_secret: secret })); // Não deixar o secret visível em uma aplicação real
+  setStoredUserData(id) {
+    localStorage.setItem("userData", JSON.stringify({ client_id: id })); 
   }
 
 }

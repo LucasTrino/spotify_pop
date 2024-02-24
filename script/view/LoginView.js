@@ -1,6 +1,5 @@
 export default class LoginView {
   constructor() {
-    this.secretInput = document.querySelector("[data-clientSecret]");
     this.idInput = document.querySelector("[data-clientId]");
     this.submitButton = document.querySelector("[data-submitButton]");
     this.labelsInput = document.querySelectorAll("[data-labelInput]");
@@ -13,16 +12,17 @@ export default class LoginView {
   }
 
 
-  submit(handlerSetSecretId, handlerRequestAuthorization, handlerIsLoginValuesValid) {
+  submit(handlerSetId, handlerRequestAuthorization, handlerIsLoginValuesValid) {
     this.submitButton.addEventListener('click', (event) => {
       event.preventDefault();
 
       let id = this.idInput.value;
-      let secret = this.secretInput.value;
 
-      if (handlerIsLoginValuesValid(id, secret)) {
-        handlerSetSecretId(id, secret);
-        handlerRequestAuthorization(id, secret);
+      console.log(id)
+
+      if (handlerIsLoginValuesValid(id)) {
+        handlerSetId(id);
+        handlerRequestAuthorization(id);
       } else {
         alert('Preencha os campos necessários');
       }

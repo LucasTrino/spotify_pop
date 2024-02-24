@@ -9,7 +9,7 @@
 
   background-color: rgba(120, 119, 119, 0.6);
   border-radius: 50%;
-  transition: all linear 0.3s;
+  transition: all linear .02s;
 
   > .icon {
     color: $icon-01;
@@ -19,5 +19,7 @@
     background-color: rgba(120, 119, 119, 0.8);
   }
 
-  
+  &:active {
+    box-shadow: 0 0 0 0.3rem rgba($white-inverse, 0.5);
+  }
 }

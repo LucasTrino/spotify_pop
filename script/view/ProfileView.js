@@ -117,14 +117,22 @@ export default class ProfileView {
 
   }
 
-  _createUserTopArtistsItems(imgUrl, title) {
+  _createUserTops(imgUrl, title, scope, size = 'medium', type = null) {
     const cardDiv = document.createElement('div');
-    cardDiv.classList.add('card', 'col-2');
+    cardDiv.setAttribute('alt', title);
+    cardDiv.setAttribute('title', title);
+    cardDiv.classList.add('card', `${size}`, `${size === 'small' ? 'col-1' : 'col-2'}`);
     cardDiv.setAttribute('data-carousel-item', '');
-    cardDiv.setAttribute('data-ui-user-top-artists-items', '');
+
+    if (scope === 'topArtists') {
+      cardDiv.setAttribute('data-ui-user-top-artists-items', '');
+    } else if (scope === 'topTracks') {
+      cardDiv.setAttribute('data-ui-user-top-tracks-items', '');
+    }
 
     const coverDiv = document.createElement('div');
     coverDiv.classList.add('card__cover');
+    type ? coverDiv.classList.add(`${type}`) : null;
     cardDiv.appendChild(coverDiv);
 
     const coverImg = document.createElement('img');
@@ -141,16 +149,26 @@ export default class ProfileView {
     return cardDiv;
   }
 
-  updateUserTopArtistsUI(array) {
+  updateUserTopsUI(array, scope) {
     if (!array || !Array.isArray(array.items)) {
       throw new InvalidInputError('Invalid input array for updateUserTopArtistsUI');
     }
 
-    const { body } = this.topArtists;
+    const { body } = this[scope];
     array.items.forEach(item => {
-      const { url: imageUrl } = item.images[1];
+      let imageUrl;
+      if (scope === 'topArtists') {
+        imageUrl = item?.images[1]?.url;
+      } else if (scope === 'topTracks') {
+        imageUrl = item?.album?.images[1]?.url
+      }
       const name = item.name;
-      const card = this._createUserTopArtistsItems(imageUrl, name);
+      let card;
+      if (scope === 'topArtists') {
+        card = this._createUserTops(imageUrl, name, scope, 'small', 'rounded');
+      } else if (scope === 'topTracks') {
+        card = this._createUserTops(imageUrl, name, scope);
+      }
       body.appendChild(card);
     });
   }
@@ -179,7 +197,7 @@ export default class ProfileView {
   addPlaceholdersToScope(scope) {
     const scopeElement = document.querySelector(this.contentScopes[scope]);
 
-    if (scope === 'topArtists') {
+    if (scope === 'topArtists' || scope === 'topTracks') {
       this._createCardPlaceholders(scopeElement, 6);
 
     }
@@ -191,7 +209,7 @@ export default class ProfileView {
       element.classList.add('placeholder-glow');
       element.appendChild(placeholderElement.cloneNode(true));
 
-      if (scope === 'topArtists') {
+      if (scope === 'topArtists' || scope === 'topTracks') {
         const placeholders = scopeElement.querySelectorAll('.placeholder');
 
         placeholders.forEach((placeholder) => {
@@ -217,7 +235,7 @@ export default class ProfileView {
       }
     });
 
-    if (scope === 'topArtists') {
+    if (scope === 'topArtists' || scope === 'topTracks') {
       contentBoxes.forEach((element) => {
         scopeElement.removeChild(element)
       });

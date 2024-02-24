@@ -15,6 +15,10 @@ export default class ProfileModel {
     this.topArtists = {
       items: null,
     }
+
+    this.topTracks = {
+      items: null,
+    }
   }
 
   updateUserProfileProperties(data) {
@@ -33,11 +37,11 @@ export default class ProfileModel {
     this.profile.product = product;
   }
 
-  updateUserTopArtists(data) {
+  updateUserTops(data, scope) {
     if (Array.isArray(data.items) && data.items.length > 0) {
-      this.topArtists.items = data.items;
+      this[scope].items = data.items;
     } else {
-      throw new MissingDataError('Items data is missing or invalid.');
+      throw new MissingDataError(`Items data is missing or invalid in ${scope}.`);
     }
   }
 }

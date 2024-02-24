@@ -288,11 +288,13 @@ img {
   align-items: center;
   background-color: rgba(120, 119, 119, 0.6);
   border-radius: 50%;
-  transition: all linear 0.3s; }
+  transition: all linear .02s; }
   .btn-icon > .icon {
     color: #f4f4f4; }
   .btn-icon:hover {
     background-color: rgba(120, 119, 119, 0.8); }
+  .btn-icon:active {
+    box-shadow: 0 0 0 0.3rem rgba(244, 244, 244, 0.5); }
 
 @use "sass:color";
 .btn, .btn-primary, .btn-success, .btn-danger {
@@ -370,7 +372,8 @@ img {
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
-  overflow: hidden; }
+  overflow: hidden;
+  cursor: pointer; }
   .card__cover {
     overflow: hidden;
     position: relative;
@@ -388,6 +391,8 @@ img {
       object-fit: cover;
       max-width: 100%;
       max-height: 100%; }
+    .card__cover.rounded {
+      border-radius: 50%; }
   .card__title {
     overflow: hidden;
     white-space: nowrap;
@@ -395,6 +400,12 @@ img {
     color: #f4f4f4;
     font-size: 1.4rem;
     text-align: center; }
+  .card.small {
+    min-width: 100px; }
+  .card.medium {
+    min-width: 120px; }
+  .card.big {
+    min-width: 160px; }
 
 .cover {
   height: 16vw;

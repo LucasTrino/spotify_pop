@@ -1,6 +1,9 @@
 # Ignore a pasta node_modules
 node_modules
 
+# Ignore a pasta documentation
+documentation
+
 #packages
 package-lock.json
 package.json

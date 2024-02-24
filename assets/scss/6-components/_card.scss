@@ -7,6 +7,8 @@
 
   overflow: hidden;
 
+  cursor: pointer;
+
   &__cover {
     overflow: hidden;
     position: relative;
@@ -29,6 +31,10 @@
       max-width: 100%;
       max-height: 100%;
     }
+
+    &.rounded {
+      border-radius: 50%;
+    }
   }
 
   &__title {
@@ -39,5 +45,17 @@
     color: $text-01;
     font-size: 1.4rem;
     text-align: center;
+  }
+
+  &.small {
+    min-width: 100px;
+  }
+
+  &.medium {
+    min-width: 120px;
+  }
+
+  &.big {
+    min-width: 160px;
   }
 }
