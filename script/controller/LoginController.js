@@ -1,4 +1,4 @@
-import API from "../helper/API.js";
+import API from "../services/API.js";
 
 export default class LoginController {
   constructor(view) {

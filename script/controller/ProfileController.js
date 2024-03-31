@@ -1,4 +1,4 @@
-import API from "../helper/API.js";
+import API from "../services/API.js";
 import URL from "../entities/URL.js";
 
 export default class ProfileController {
