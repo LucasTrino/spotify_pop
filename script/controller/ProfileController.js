@@ -80,10 +80,10 @@ export default class ProfileController {
 
         const accessToken = JSON.parse(localStorage.getItem('sessionTokens')).access_token;
 
-        await this.fetchAndUpdateUserProfile(accessToken);
+        this.fetchAndUpdateUserProfile(accessToken);
 
-        await this.fetchAndUpdateUserTops(accessToken, 'topArtists', 'artists', 10, 0, 'medium_term');
-        await this.fetchAndUpdateUserTops(accessToken, 'topTracks', 'tracks', 10, 0, 'medium_term');
+        this.fetchAndUpdateUserTops(accessToken, 'topArtists', 'artists', 10, 0, 'medium_term');
+        this.fetchAndUpdateUserTops(accessToken, 'topTracks', 'tracks', 10, 0, 'medium_term');
 
       } catch (error) {
         console.error('Error during page load:', error);
