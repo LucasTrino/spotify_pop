@@ -28,7 +28,7 @@ export default class ProfileModel {
       throw new MissingDataError('User profile data is missing or invalid.');
     }
 
-    this.profile.imgUrl = images && images.length > 1 ? images[1].url : null;
+    this.profile.imgUrl = images && images.length > 1 ? images[0].url : null;
     this.profile.name = display_name;
     this.profile.id = id;
     this.profile.email = email;
