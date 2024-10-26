@@ -8,38 +8,38 @@
 }
 
 .main {
-  display: flex;
-  flex-direction: row;
   height: 100%;
+  width: 100%;
 
-  background-color: $ui-01;
-
-  overflow: hidden;
-}
-
-.menu {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  background-color: $ui-01;
-}
-
-.content {
-  flex: 3;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
 
-  padding: 2rem;
+  padding: 0 2.5rem 0 2.5rem;
 
   background-color: $ui-01;
 
-  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-@media only screen and (max-width: 800px) {
-  .main {
-    flex-direction: column;
-  }
+.sec-profile {
+  width: 100%;
+
+  background-color: $ui-01;
+
+  position: sticky;
+  left: 0;
+  top: 0;
+
+  z-index: 998;
+}
+
+.sec-content {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  background-color: $ui-01;
 }

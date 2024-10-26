@@ -28,47 +28,56 @@
         />
       </header>
       <main class="main">
-        <section class="menu">
-          <div class="profile-card" data-profile-card data-scope-user-profile>
+        <section class="sec-profile">
+          <div
+            class="profile-content"
+            data-profile-card
+            data-scope-user-profile
+          >
             <div
-              class="profile-card__img"
+              class="profile-content__image"
               data-profile-image-box
               data-scope-box
             ></div>
-            <span
-              class="profile-card__name"
-              data-profile-name
-              data-scope-box
-            ></span>
-            <div class="profile-card__info">
-              <div class="profile-card__info__items">
-                <span class="profile-card__info__items__title">País</span>
+            <div class="profile-content__info">
+              <div class="profile-content__info__nameWrapper">
                 <span
-                  class="profile-card__info__items__value"
-                  data-profile-country
+                  class="profile-content__info__name"
+                  data-profile-name
                   data-scope-box
                 ></span>
               </div>
-              <div class="profile-card__info__items">
-                <span class="profile-card__info__items__title">Seguidores</span>
-                <span
-                  class="profile-card__info__items__value"
-                  data-profile-followers
-                  data-scope-box
-                ></span>
-              </div>
-              <div class="profile-card__info__items">
-                <span class="profile-card__info__items__title">Conta</span>
-                <span
-                  class="profile-card__info__items__value"
-                  data-profile-product
-                  data-scope-box
-                ></span>
+              <div class="profile-content__info__infoFieldWrapper">
+                <div class="infoField">
+                  <span class="infoField-title">País</span>
+                  <span
+                    class="infoField-value"
+                    data-profile-country
+                    data-scope-box
+                  ></span>
+                </div>
+                <div class="infoField">
+                  <span class="infoField-title">Seguidores</span>
+                  <span
+                    class="infoField-value"
+                    data-profile-followers
+                    data-scope-box
+                  ></span>
+                </div>
+                <div class="infoField">
+                  <span class="infoField-title">Conta</span>
+                  <span
+                    class="infoField-value"
+                    data-profile-product
+                    data-scope-box
+                  ></span>
+                </div>
               </div>
             </div>
           </div>
         </section>
-        <section class="content row">
+
+        <section class="sec-content">
           <!-- carousel -->
           <div class="carousel" data-carousel data-ui-user-top-artists-wrapper>
             <div class="carousel__header">Seus artistas favoritos</div>
