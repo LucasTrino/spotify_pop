@@ -67,8 +67,8 @@ export default class ProfileController {
   }
 
   async pageLoad() {
-    if (window.location.search.length > 0) {
-
+    if (localStorage.getItem('userData')) {
+      
       this.saveCodeToLocalStorage();
 
       try {
