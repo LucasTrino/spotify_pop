@@ -7,3 +7,5 @@ documentation
 #packages
 package-lock.json
 package.json
+
+assets/scss/style.css

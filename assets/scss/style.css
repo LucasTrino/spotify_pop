@@ -641,9 +641,6 @@ img {
 .sec-profile {
   width: 100%;
   background-color: #212222;
-  position: sticky;
-  left: 0;
-  top: 0;
   z-index: 998; }
 
 .sec-content {
